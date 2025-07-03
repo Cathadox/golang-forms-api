@@ -1,4 +1,4 @@
-# Golanf-forms-api
+# Golang-forms-api
 
 In order to start the api run the following command:
 
