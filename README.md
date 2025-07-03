@@ -1,4 +1,4 @@
-# salesforge-assignment
+# Golanf-forms-api
 
 In order to start the api run the following command:
 
