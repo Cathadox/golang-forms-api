@@ -1,0 +1,296 @@
+{
+	"info": {
+		"_postman_id": "d85e101d-1abb-4551-a923-aeda9005bb33",
+		"name": "Golang Forms API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "21991537"
+	},
+	"item": [
+		{
+			"name": "Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let jsonData = pm.response.json();",
+							"let token = jsonData.token;",
+							"",
+							"if (token) {",
+							"  pm.environment.set(\"authToken\", token);",
+							"  console.log(\"Token set in collection variables\");",
+							"} else {",
+							"  console.warn(\"Token not found in response!\");",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"admin\",\n    \"password\": \"test123\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{publicUrl}}/{{baseUrl}}/login",
+					"host": [
+						"{{publicUrl}}"
+					],
+					"path": [
+						"{{baseUrl}}",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Form",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let jsonData = pm.response.json();",
+							"let formId = jsonData.id;",
+							"",
+							"if (formId) {",
+							"  pm.environment.set(\"formId\", formId);",
+							"  console.log(\"Form ID set in collection variables\");",
+							"} else {",
+							"  console.warn(\"Form ID not found in response!\");",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Onboarding Form\",\n    \"openTrackingEnabled\": true,\n    \"clickTrackingEnabled\": false,\n    \"steps\": [\n      {\n        \"name\": \"Day 1: Welcome Form\",\n        \"content\": \"<h1>Welcome, {{firstName}}!</h1><p>We are so excited to have you on board. Here are some resources to get you started.</p>\",\n        \"step\": 1\n      },\n      {\n        \"name\": \"Day 3: Check-in Form\",\n        \"content\": \"Please fill in this check-in form\",\n        \"step\": 2\n      },\n      {\n        \"name\": \"Day 7: Feature Form\",\n        \"content\": \"Please fill in the features you would desire\",\n        \"step\": 3\n      }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{publicUrl}}/{{baseUrl}}/form",
+					"host": [
+						"{{publicUrl}}"
+					],
+					"path": [
+						"{{baseUrl}}",
+						"form"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Form",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let jsonData = pm.response.json();",
+							"",
+							"if (jsonData.steps && Array.isArray(jsonData.steps)) {",
+							"    jsonData.steps.forEach((step, index) => {",
+							"        let varName = `stepId${index + 1}`;",
+							"        let stepId = step.self.id;",
+							"",
+							"        if (stepId) {",
+							"            pm.environment.set(varName, stepId);",
+							"            console.log(`Set ${varName} = ${stepId}`);",
+							"        }",
+							"    });",
+							"} else {",
+							"    console.warn(\"No steps found in the response.\");",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{publicUrl}}/{{baseUrl}}/form/{{formId}}",
+					"host": [
+						"{{publicUrl}}"
+					],
+					"path": [
+						"{{baseUrl}}",
+						"form",
+						"{{formId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Form Step",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost/api/v1/form/eb076af6-ef30-476f-af97-368ce958ccd1/steps/2438b0ee-52bc-4fb2-9bbf-f4f35ff2d423",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"api",
+						"v1",
+						"form",
+						"eb076af6-ef30-476f-af97-368ce958ccd1",
+						"steps",
+						"2438b0ee-52bc-4fb2-9bbf-f4f35ff2d423"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Form",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"clickTrackingEnabled\": true,\n    \"openTrackingEnabled\": true\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{publicUrl}}/{{baseUrl}}/form/{{formId}}",
+					"host": [
+						"{{publicUrl}}"
+					],
+					"path": [
+						"{{baseUrl}}",
+						"form",
+						"{{formId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Form Step",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"bla bla\",\n    \"content\": \"bla bla content\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{publicUrl}}/{{baseUrl}}/form/{{formId}}/steps/{{stepId1}}",
+					"host": [
+						"{{publicUrl}}"
+					],
+					"path": [
+						"{{baseUrl}}",
+						"form",
+						"{{formId}}",
+						"steps",
+						"{{stepId1}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Form Step",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{publicUrl}}/{{baseUrl}}/form/{{formId}}/steps/{{stepId1}}",
+					"host": [
+						"{{publicUrl}}"
+					],
+					"path": [
+						"{{baseUrl}}",
+						"form",
+						"{{formId}}",
+						"steps",
+						"{{stepId1}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{authToken}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "authToken",
+			"value": ""
+		},
+		{
+			"key": "formId",
+			"value": ""
+		}
+	]
+}

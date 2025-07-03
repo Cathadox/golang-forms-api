@@ -1,0 +1,1 @@
+DELETE FROM authz.credentials WHERE username IN ('admin', 'testuser');

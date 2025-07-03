@@ -1,0 +1,88 @@
+services:
+
+  caddy:
+    image: caddy:2-alpine
+    container_name: my-caddy-proxy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - mynetwork
+    depends_on:
+      - api
+
+  api:
+    build: .
+    ports:
+      - "8080:8080"
+    env_file:
+      - ./.env
+    networks:
+      - mynetwork
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+  migrate:
+    image: migrate/migrate
+    networks:
+      - mynetwork
+    volumes:
+      - ./migrations:/migrations
+    command: [ "-path", "/migrations", "-database", "${MIGRATE_DATABASE_URL}", "up" ]
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: on-failure
+    env_file:
+      - ./.env
+
+  seed:
+    image: postgres:15-alpine
+    networks:
+      - mynetwork
+    volumes:
+      - ./init-db:/init-db
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    command: >
+      sh -c "
+        PGPASSWORD=${POSTGRES_PASSWORD} psql -h db -U ${POSTGRES_USER} -d ${POSTGRES_DB} -f /init-db/seed.sql
+      "
+    env_file:
+      - ./.env
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+    ports:
+      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - mynetwork
+    env_file:
+      - ./.env
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  mynetwork:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  caddy_data:
+  caddy_config:

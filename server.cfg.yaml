@@ -1,0 +1,8 @@
+server:
+  port: 8080
+  baseUrl: /api/v1
+  publicUrl: https://localhost
+
+log:
+  level: "debug"
+  pretty: false

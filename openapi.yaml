@@ -1,0 +1,533 @@
+openapi: 3.0.0
+info:
+  title: Form API
+  version: 1.0.0
+  description: This is an example API for managing forms and steps.
+
+servers:
+  - url: /api/v1
+    description: The base path for all API endpoints
+
+paths:
+  /login:
+    post:
+      summary: User login
+      operationId: LoginUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Authentication'
+      responses:
+        '200':
+          description: Successful login
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthenticationResponse'
+        '400':
+          description: Bad request, invalid input
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/ValidationErrorResponse'
+                  - $ref: '#/components/schemas/ErrorResponse'
+
+        '401':
+          description: Unauthorized, invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /form:
+    post:
+      summary: Create a new form
+      operationId: CreateForm
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FormCreate'
+      responses:
+        '200':
+          description: Created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SelfId'
+        '400':
+          description: Bad request, invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        '401':
+          description: Unauthorized, invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden, insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /form/{formId}:
+    get:
+      summary: Get a specific form
+      operationId: GetFormById
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the form to retrieve
+      responses:
+        '200':
+          description: Successful response with form details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormResponseGet'
+        '400':
+          description: Bad request, invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        '401':
+          description: Unauthorized, invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden, insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Form not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    patch:
+      summary: Update an existing form
+      operationId: UpdateFormById
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the form to update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FormUpdate'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormResponseGet'
+        '400':
+          description: Bad request, invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        '401':
+          description: Unauthorized, invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden, insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Form not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /form/{formId}/steps/{stepId}:
+    get:
+      summary: Get a specific form step
+      operationId: GetFormStepById
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the form to get steps from
+        - name: stepId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the form step to retrieve
+      responses:
+        '200':
+          description: Successful response with form step details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormStepResponseGet'
+        '400':
+          description: Bad request, invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        '401':
+          description: Unauthorized, invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden, insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Form step not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    patch:
+      summary: Update an existing form step
+      operationId: UpdateFormStepById
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the form to update form steps
+        - name: stepId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the form step to update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FormStepUpdate'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormStepResponseGet'
+        '400':
+          description: Bad request, invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        '401':
+          description: Unauthorized, invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden, insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Form step not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      summary: Delete a form step
+      operationId: DeleteFormStepById
+      parameters:
+        - name: formId
+          in: path
+          required: true
+          schema:
+            type: string
+            description: The ID of the form to delete a step from
+        - name: stepId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the form step to delete
+      responses:
+        '204':
+          description: Successfully deleted the form step
+        '400':
+          description: Bad request, invalid input
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        '401':
+          description: Unauthorized, invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Forbidden, insufficient permissions
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Form step not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+
+    Authentication:
+      type: object
+      properties:
+        username:
+          type: string
+          description: The username for authentication
+        password:
+          type: string
+          description: The password for authentication
+      required:
+        - username
+        - password
+
+    FormStepUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the step
+          x-oapi-codegen-extra-tags:
+            validate: "omitempty,min=1,max=100"
+        content:
+          type: string
+          description: The content of the step
+          x-oapi-codegen-extra-tags:
+            validate: "omitempty,min=1,max=256"
+
+    FormStepCreate:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the step
+          x-oapi-codegen-extra-tags:
+            validate: "required,min=1,max=100"
+        content:
+          type: string
+          description: The content of the step
+          x-oapi-codegen-extra-tags:
+            validate: "required,min=1,max=256"
+        step:
+          type: integer
+          description: The order of the step in the form
+      required:
+        - name
+        - content
+        - step
+
+    FormStepGetArray:
+      type: array
+      items:
+        $ref: '#/components/schemas/FormStepResponseGet'
+      description: An array of form steps
+
+    FormStepCreateArray:
+      type: array
+      items:
+        $ref: '#/components/schemas/FormStepCreate'
+      x-oapi-codegen-extra-tags:
+        validate: "required,min=1,max=100"
+      description: An array of form steps
+
+    FormCreate:
+      type: object
+      properties:
+        name:
+          type: string
+          description: The name of the form
+          x-oapi-codegen-extra-tags:
+            validate: "required,min=1,max=100"
+        openTrackingEnabled:
+          type: boolean
+          description: Indicates if open tracking is enabled
+        clickTrackingEnabled:
+          type: boolean
+          description: Indicates if click tracking is enabled
+        steps:
+          $ref: '#/components/schemas/FormStepCreateArray'
+      required:
+        - name
+        - steps
+
+    FormUpdate:
+      type: object
+      properties:
+        openTrackingEnabled:
+          type: boolean
+          description: Indicates if open tracking is enabled
+        clickTrackingEnabled:
+          type: boolean
+          description: Indicates if click tracking is enabled
+
+    FormResponseGet:
+      type: object
+      properties:
+        self:
+          $ref: '#/components/schemas/SelfId'
+        name:
+          type: string
+          description: The name of the form
+        openTrackingEnabled:
+          type: boolean
+          description: Indicates if open tracking is enabled
+        clickTrackingEnabled:
+          type: boolean
+          description: Indicates if click tracking is enabled
+        steps:
+          $ref: '#/components/schemas/FormStepGetArray'
+      required:
+        - self
+        - name
+        - steps
+        - openTrackingEnabled
+        - clickTrackingEnabled
+
+    FormStepResponseGet:
+      type: object
+      properties:
+        self:
+          $ref: '#/components/schemas/SelfId'
+        name:
+          type: string
+          description: The name of the form step
+        content:
+          type: string
+          description: The content of the form step
+        step:
+          type: integer
+          description: The order of the step in the form
+      required:
+        - self
+        - name
+        - content
+        - step
+
+    SelfId:
+      type: object
+      description: An object containing the ID and href of a resource
+      properties:
+        id:
+          type: string
+          description: The ID of the location
+        href:
+          type: string
+          description: The URL of the location
+      required:
+        - id
+        - href
+
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          description: The error code
+        message:
+          type: string
+          description: A descriptive error message
+      required:
+        - code
+        - message
+
+    ValidationErrors:
+      type: array
+      items:
+        $ref: '#/components/schemas/ValidationError'
+      description: A list of validation errors
+
+    ValidationError:
+      type: object
+      properties:
+        field:
+          type: string
+          description: The field that caused the validation error
+        message:
+          type: string
+          description: The validation error message for the field
+      required:
+        - field
+        - message
+
+    ValidationErrorResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          description: The error code
+        message:
+          type: string
+          description: A descriptive error message
+        errors:
+          $ref: '#/components/schemas/ValidationErrors'
+      required:
+        - code
+        - message
+        - errors
+
+    AuthenticationResponse:
+      type: object
+      properties:
+        token:
+          type: string
+          description: The JWT token for authentication
+      required:
+        - token
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Use a valid JWT token for authentication
